@@ -1,0 +1,118 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>LARP Tracker</title>
+</head>
+<body>
+	<div id="header" class="scrollmenu" style="
+    position: fixed;
+    width: 100%;
+"></div>
+    <div id="footer"></div>
+    <div id="body-content" style="
+    padding-top: 120px;padding-bottom: 50px;
+">
+	<h1>Add Referrer Payment</h1>
+	<form id="newrefererpayment">
+		<table class="sub" style="width: 40%">
+			<tr>
+				<td>Referrer Name*</td>
+				<td><input type="text" id="referrername" name="name" onfocus="removeErrormsg()" /><p class="errormsg" id="msgname"/></td>
+			</tr>
+			<tr>
+				<td>Payment Date*</td>
+				<td><input type="date" id="paymentdate" name="date" onfocus="removeErrormsg()"/><p class="errormsg" id="msgpaymentdate"/></td>
+			</tr>
+			<tr>
+				<td>Amount*</td>
+				<td><input type="text" id="paymentamount" name="amount" onfocus="removeErrormsg()" /><p class="errormsg" id="msgamount"/></td>
+			</tr>
+		</table>
+			<input type="button" id="Submitbutton" value="Submit" onclick="prepareRequestBody()"/>
+	</form>
+</div>
+
+	<script type="text/javascript">
+		function prepareRequestBody() {
+			var referrername=$("#referrername").val();
+			var paymentdate=$("#paymentdate").val();
+			var paymentamount=$("#paymentamount").val();
+			if(referrername == ""){
+				$("#msgname").text("*This value is required");
+			}
+			else if(paymentdate == ""){
+				$("#msgpaymentdate").text("*This value is required");
+			}
+			else if(paymentamount == ""){
+				$("#msgamount").text("*This value is required");
+			}
+			else{
+				var data = {};
+				data.referrerName = $("#referrername").val();
+				data.payment_date = $("#paymentdate").val();
+				data.amount = $("#paymentamount").val();
+				apiCall(endpoints.addReferrerPayment,data)	
+		}
+		}		
+		
+		function removeErrormsg(){
+			$("p").text("");
+		}
+		
+		function apiCall(endpoint, body) {
+			console.log("Values in api call Body..."+body)
+			console.log("Values in api call Endpoint..."+endpoint)
+			console.log("Inside api call.....")
+			console.log("End point is: " + endpoint)
+			console.log("Body is: " + body)
+			var bearerToken=getCookie();
+			console.log("Bearer token:"+bearerToken)
+			$.ajax({
+				method : 'POST',
+				contentType: 'application/json',
+				beforeSend: function(xhr) {
+	                   xhr.setRequestHeader("Authorization", bearerToken);
+	                },
+				url : endpoint,
+				data : JSON.stringify(body),
+				success : function(data) {
+					success(data);
+					
+				},
+				error : function(error) {
+					alert("Failed to add the payment")
+
+				}
+			});
+			return false;
+		}
+		function success(data) {
+			console.log(data);
+			var customerId=data.customerid;
+			alert("Successfully created the payment with the id: "+data.id)
+			$("#referrername").val("");
+			$("#paymentamount").val("");
+		}
+	</script>
+	
+	 <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+		integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+		crossorigin="anonymous"></script>
+	<script type="text/javascript">
+		$(document).ready(function() {
+			$("#header").load("header.html",function(){
+				var token=getCookie();
+				if(token =="" || token == null){
+					window.location.href = endpoints.loginHTML;	
+				}
+				else{
+				console.log("Logged in user, so loading the page:"+token)
+				}
+			});
+			$("#footer").load("footer.html");
+			let today = new Date().toISOString().substr(0, 10);
+			$("#paymentdate").val(today);
+		});
+	</script>
+</body>
+</html>

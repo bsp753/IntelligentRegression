@@ -1,0 +1,281 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<script
+	src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
+<script
+	src="http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.2/modernizr.js"></script>
+
+
+<title>LARP Tracker</title>
+</head>
+<body>
+	<div id="header" class="scrollmenu" style="
+    position: fixed;
+    width: 100%;
+"></div>
+	<div id="footer"></div>
+	<div id="body-content" style="
+    padding-top: 120px;
+">
+	<h1>Update Quote</h1>
+	<form id="registercustomer">
+		<table class="sub" style="width: 40%">
+			<tr>
+				<td>Vehicle Number</td>
+				<td><input type="text" id="vehiclenumber" name="vehiclenumber" /></td>
+			</tr>
+		</table>
+		<button type="button" class="updatedetails" id="updatequote"
+			style="width: 25%">Submit</button>
+	</form>
+	<p id="showData"></p>
+</div>
+	<div class="form-popup" id="myForm">
+		<form method="post" action="newcustomer" class="form-container">
+			<h2>Update Quote Details</h2>
+
+			<table class="sub" style="width: 40%">
+				<tr>
+					<td>Quote Date</td>
+					<td><input type="date" id="updatequotedate" name="quote_date" onfocus="removeErrormsg()" /><p class="errormsg" id="msgupdatequotedate"/></td>
+				</tr>
+				<tr>
+					<td>Quote Status</td>
+					<td><input type="text" id="updatedquotestatus" name="quote_status" onfocus="removeErrormsg()" /><p class="errormsg" id="msgupdatequotestatus"/></td>
+				</tr>
+				<tr>
+					<td>Policy Type</td>
+					<td><input type="text" id="updatedquotepackage" name="packagetype" onfocus="removeErrormsg()" /><p class="errormsg" id="msgupdatepolicytype"/></td>
+				</tr>
+				<tr>
+					<td>Insurer Company*</td>
+					<td><input type="text" id="customerupdatedclient_company"
+						name="client_company" onfocus="removeErrormsg()" /><p class="errormsg" id="msgupcompany"/></td>
+				</tr>
+				<tr>
+					<td>IDV</td>
+					<td><input type="number" id="updatedquoteidv" name="idv" onfocus="removeErrormsg()" /><p class="errormsg" id="msgupdateidv"/></td>
+				</tr>
+				<tr>
+					<td>Amount</td>
+					<td><input type="number" id="updatedquoteamount" name="amount" onfocus="removeErrormsg()" /><p class="errormsg" id="msgupdateamount"/></td>
+				</tr>
+				<tr>
+					<td>Description</td>
+					<td><textarea id="updatedquotedescription" name="description" onfocus="removeErrormsg()" ></textarea></td>
+				</tr>
+			</table>
+			<input type="button" class="updatesubmit" id="updatequoteSubmit" value="Submit" />
+					<input type="button" class="updateclose" value="Close" onclick="closeForm()" />
+		</form>
+	</div>
+	<script type="text/javascript">
+		function prepareRequestBody(quoteid) {
+			var quotedate=$("#updatequotedate").val();
+			var quotestatus=$("#updatedquotestatus").val();
+			var policytype=$("#updatedquotepackage").val();
+			var idv=$("#idv").val();
+			var amount=$("#updatedquoteamount").val();
+			var clientcompany=$("#customerupdatedclient_company").val();
+			if(quotedate == ""){
+				$("#msgupdatequotedate").text("*This value is required");
+			}
+			else if(quotestatus == ""){
+				$("#msgupdatequotestatus").text("*This value is required");
+			}
+			else if(clientcompany == ""){
+				$("#msgupcompany").text("*This value is required");
+			}
+			else if(policytype == ""){
+				$("#msgupdatepolicytype").text("*This value is required");
+			}
+			else if(idv == ""){
+				$("#msgupdateidv").text("*This value is required");
+			}
+			else if(amount == ""){
+				$("#msgupdateamount").text("*This value is required");
+			}
+			else{
+			var data = {};
+			data.quoteid = quoteid;
+			data.quote_date = $("#updatequotedate").val();
+			data.quote_status = $("#updatedquotestatus").val();
+			data.packagetype = $("#updatedquotepackage").val();
+			data.idv = $("#updatedquoteidv").val();
+			data.amount = $("#updatedquoteamount")
+					.val();
+			data.description = $("#updatedquotedescription").val();
+			data.insurercompany = $("#customerupdatedclient_company")
+			.val();
+			var endpoint = endpoints.updateQuote;
+			endpoint = endpoint.replace('id', quoteid);
+			apiPutCall(endpoint, data)
+		}
+		}		
+		
+		function removeErrormsg(){
+			$("p").text("");
+		}
+		
+		function apiDeleteCall(quoteid) {
+			var endpoint=endpoints.deleteQuote;
+			endpoint=endpoint.replace("id",quoteid);
+			console.log("Values in api call Body..." + body)
+			console.log("Values in api call Endpoint..." + endpoint)
+			console.log("Inside api call.....")
+			console.log("End point is: " + endpoint)
+			console.log("Body is: " + body)
+			var bearerToken=getCookie();
+			console.log("Bearer token:"+bearerToken)
+			$.ajax({
+				method : 'DELETE',
+				contentType : 'application/json',
+				beforeSend: function(xhr) {
+	                   xhr.setRequestHeader("Authorization", bearerToken);
+	                },
+				url : endpoint,
+				success : function(data) {
+					success2(data);
+
+				},
+				error : function(error) {
+					alert("Failed to delete the quote details")
+				}
+			});
+			return false;
+		}
+		function success2(data) {
+			console.log("Successfully done...")
+			console.log(data);
+			alert("Successfully deleted the customer details")
+			whatever();
+		}
+		
+		
+		
+		function apiPutCall(endpoint, body) {
+			console.log("Values in api call Body..." + body)
+			console.log("Values in api call Endpoint..." + endpoint)
+			console.log("Inside api call.....")
+			console.log("End point is: " + endpoint)
+			console.log("Body is: " + body)
+			var bearerToken=getCookie();
+			console.log("Bearer token:"+bearerToken)
+			$.ajax({
+				method : 'PUT',
+				contentType : 'application/json',
+				beforeSend: function(xhr) {
+	                   xhr.setRequestHeader("Authorization", bearerToken);
+	                },
+				url : endpoint,
+				data : JSON.stringify(body),
+				success : function(data) {
+					success(data);
+
+				},
+				error : function(error) {
+					alert("Failed to update the quote details")
+				}
+			});
+			return false;
+		}
+		function success(data) {
+			console.log("Successfully done...")
+			console.log(data);
+			alert("Successfully updated the quote details")
+			closeForm();
+			whatever();
+
+		}
+		
+        function whatever() {
+            console.log("Inside function...")
+            var vehiclenumber = $('#vehiclenumber').val();
+            console.log("Vehicle number: " + vehiclenumber)
+            endpoint = endpoints.getQuote;
+            console.log("End point is: " + endpoint)
+            body = ""
+            endpoint = endpoint.replace("id", vehiclenumber);
+            console.log("Updated Endpoint is: " + endpoint);
+            apiQuoteCall(endpoint, body);
+}
+
+	$("#updatequote").click(whatever);
+
+		function apiQuoteCall(endpoint, body) {
+			console.log("End point: " + endpoint)
+			console.log("Inside api call.....")
+			console.log("End point is: " + endpoint)
+			console.log("Body is: " + body)
+			var bearerToken=getCookie();
+			console.log("Bearer token:"+bearerToken)
+			$.ajax({
+				method : 'GET',
+				beforeSend: function(xhr) {
+	                   xhr.setRequestHeader("Authorization", bearerToken);
+	                },
+				url : endpoint,
+				success : function(data) {
+					success1(data);
+				},
+				error : function(error) {
+					alert(error);
+				}
+			});
+			return false;
+		}
+		function success1(data) {
+			console.log("Successfully done...")
+			console.log(data);
+			if(data.length == 0){
+				console.log("There is no response....")
+				$("#showData").text("No Records Found")
+			}
+			else{
+				parseData(data);
+			}
+			
+			//CreateTableFromJSON(data);
+		}
+		function parseData(data) {
+			const c = [];
+			for (var i = 0; i < data.length; i++) {
+				const b = {};
+				for ( var j in data[i]) {
+					if (typeof (data[i][j]) !== 'object') {
+						b[j] = data[i][j];
+					}
+				}
+				if (Object.keys(b).length) {
+					c.push(b);
+				}
+			}
+			console.log("yayyyyy...")
+			console.log(c);
+			//data=JSON.stringify(c);
+			console.log("hmmmm:" + c)
+
+			CreateTableFromJSON(c,"quoteid");
+		}
+	</script>
+
+	<script src="https://code.jquery.com/jquery-3.4.1.min.js"
+		integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+		crossorigin="anonymous"></script>
+	<script type="text/javascript">
+		$(document).ready(function() {
+			$("#header").load("header.html",function(){
+				var token=getCookie();
+				if(token =="" || token == null){
+					window.location.href = endpoints.loginHTML;	
+				}
+				else{
+				console.log("Logged in user, so loading the page:"+token)
+				}
+			});
+			$("#footer").load("footer.html");
+		}); 
+	</script>
+</body>
+</html>

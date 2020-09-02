@@ -1,0 +1,242 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<script
+	src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
+<script
+	src="http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.2/modernizr.js"></script>
+
+<title>LARP Tracker</title>
+</head>
+<body>
+	<div id="header" class="scrollmenu" style="
+    position: fixed;
+    width: 100%;
+"></div>
+	<div id="footer"></div>
+	<div id="body-content" style="
+    padding-top: 120px;
+">
+	<h1>Update Vehicle</h1>
+
+	<form id="updatevehicledetails">
+		<table class="sub" style="width: 40%">
+			<tr>
+				<td>Vehicle Number</td>
+				<td><input type="text" id="vehiclenumber" name="vehiclenumber" /></td>
+			</tr>
+		</table>
+		<button type="button" class="updatedetails" id="updatevehicle"
+			style="width: 25%">Submit</button>
+	</form>
+	<p id="showData"></p>
+</div>
+	<div class="form-popup" id="myForm">
+		<form class="form-container">
+			<h2>Update Vehicle Details</h2>
+
+			<table class="sub" style="width: 40%">
+				<tr>
+					<td>Registration No.</td>
+					<td><input type="text" id="updatedregistration_no"
+						name="updatedregistration_no" onfocus="removeErrormsg()"/><p class="errormsg" id="updateregno"/></td>
+				</tr>
+				<tr>
+					<td>Model</td>
+					<td><input type="text" id="updatedmodel" name="updatedmodel" onfocus="removeErrormsg()" /><p class="errormsg" id="updatevehiclemodel"/></td>
+				</tr>
+				<tr>
+					<td>Expiry</td>
+					<td><input type="date" id="updatedexpiry_date"
+						name="updatedexpiry_date" onfocus="removeErrormsg()"/><p class="errormsg" id="updatevehicleexpirydate"/></td>
+				</tr>
+			</table>
+			<input type="button" class="updatesubmit" id="updatevehicleSubmit" value="Submit" />
+			<input type="button" class="updateclose" value="Close" onclick="closeForm()" />
+		</form>
+
+	</div>
+	<script type="text/javascript">
+			function prepareRequestBody(vehicleid) {
+				var regno=$("#updatedregistration_no").val();
+				var model=$("#updatedmodel").val();
+				var expiry=$("#updatedexpiry_date").val();
+				if(regno == ""){
+					$("#updateregno").text("*This value is required");
+				}
+				else if(model == ""){
+					$("#updatevehiclemodel").text("*This value is required");
+				}
+				else if(expiry == ""){
+					$("#updatevehicleexpirydate").text("*This value is required");
+				}
+				else{
+				var data = {};
+				data.expiry_date = $("#updatedexpiry_date").val();
+				data.model_number = $("#updatedmodel").val();
+				data.registration_number = $("#updatedregistration_no").val();
+				var endpoint = endpoints.updateVehicle;
+				endpoint = endpoint.replace('id', vehicleid);
+				apiPutCall(endpoint, data)
+			}
+			}	
+			function removeErrormsg(){
+				$("p").text("");
+			}	
+			
+			function apiDeleteCall(vehicleid) {
+				var endpoint=endpoints.deleteVehicle;
+				endpoint=endpoint.replace("id",vehicleid);
+				console.log("Values in api call Body..." + body)
+				console.log("Values in api call Endpoint..." + endpoint)
+				console.log("Inside api call.....")
+				console.log("End point is: " + endpoint)
+				console.log("Body is: " + body)
+				var bearerToken=getCookie();
+			console.log("Bearer token:"+bearerToken)
+				$.ajax({
+					method : 'DELETE',
+					contentType : 'application/json',
+					beforeSend: function(xhr) {
+		                   xhr.setRequestHeader("Authorization", bearerToken);
+		                },
+					url : endpoint,
+					success : function(data) {
+						success2(data);
+
+					},
+					error : function(error) {
+						alert("Failed to delete the vehicle details")
+					}
+				});
+				return false;
+			}
+			function success2(data) {
+				console.log("Successfully done...")
+				console.log(data);
+				alert("Successfully deleted the customer details")
+				whatever();
+			}
+			
+			function apiPutCall(endpoint, body) {
+				console.log("Values in api call Body..." + body)
+				console.log("Values in api call Endpoint..." + endpoint)
+				console.log("Inside api call.....")
+				console.log("End point is: " + endpoint)
+				console.log("Body is: " + body)
+				var bearerToken=getCookie();
+			console.log("Bearer token:"+bearerToken)
+				$.ajax({
+					method : 'PUT',
+					contentType : 'application/json',
+					beforeSend: function(xhr) {
+		                   xhr.setRequestHeader("Authorization", bearerToken);
+		                },
+					url : endpoint,
+					data : JSON.stringify(body),
+					success : function(data) {
+						success(data);
+
+					},
+					error : function(error) {
+						alert("Failed to update the vehicle details")
+					}
+				});
+				return false;
+			}
+			function success(data) {
+				console.log("Successfully done...")
+				console.log(data);
+				alert("Successfully updated the vehicle details")
+				closeForm();
+				whatever();
+			}
+
+			function whatever() {
+	            console.log("Inside function...")
+	            var vehiclenumber = $('#vehiclenumber').val();
+	            console.log("Vehicle number: " + vehiclenumber)
+	            endpoint = endpoints.getVehicle;
+	            console.log("End point is: " + endpoint)
+	            body = ""
+	            endpoint = endpoint.replace("id", vehiclenumber);
+	            console.log("Updated Endpoint is: " + endpoint);
+	            apiQuoteCall(endpoint, body);
+	}
+
+		$("#updatevehicle").click(whatever)
+
+			function apiQuoteCall(endpoint, body) {
+				console.log("End point: " + endpoint)
+				console.log("End point is: " + endpoint)
+				console.log("Body is: " + body)
+				var bearerToken=getCookie();
+			console.log("Bearer token:"+bearerToken)
+				$.ajax({
+					method : 'GET',
+					beforeSend: function(xhr) {
+		                   xhr.setRequestHeader("Authorization", bearerToken);
+		                },
+					url : endpoint,
+					success : function(data) {
+						success1(data);
+					},
+					error : function(error) {
+						alert(error);
+					}
+				});
+				return false;
+			}
+		function success1(data) {
+			console.log("Successfully done...")
+			console.log(data);
+			if(data.length == 0){
+				console.log("There is no response....")
+				$("#showData").text("No Records Found")
+			}
+			else{
+				parseData(data);
+			}
+			
+			//CreateTableFromJSON(data);
+		}
+			function parseData(data) {
+				const c = [];
+				for (var i = 0; i < data.length; i++) {
+					const b = {};
+					for ( var j in data[i]) {
+						if (typeof (data[i][j]) !== 'object') {
+							b[j] = data[i][j];
+						}
+					}
+					if (Object.keys(b).length) {
+						c.push(b);
+					}
+				}
+				console.log("yayyyyy...")
+				console.log(c);
+				console.log("hmmmm:" + c)
+
+				CreateTableFromJSON(c,"vehicleid");
+			}
+		</script>
+
+	 <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+		integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+		crossorigin="anonymous"></script>
+	 <script type="text/javascript">
+		$(document).ready(function() {
+			$("#header").load("header.html",function(){
+				var token=getCookie();
+				if(token =="" || token == null){
+					window.location.href = endpoints.loginHTML;	
+				}
+				else{
+				console.log("Logged in user, so loading the page:"+token)
+				}
+			});
+			$("#footer").load("footer.html");
+		});
+		</script> 
+</body>
+</html>

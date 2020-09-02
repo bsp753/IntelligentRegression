@@ -1,0 +1,165 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>SabkaInsurance</title>
+</head>
+<body>
+
+	<div id="header" class="scrollmenu" style="
+    position: fixed;
+    width: 100%;
+"></div>
+	<div id="footer"></div>
+	<div id="body-content" style="
+    padding-top: 120px;
+">
+	<h1>Add Quote</h1>
+	<form id="newquote">
+		<table class="sub" style="width: 40%">
+		<tr>
+				<td>Vehicle No.</td>
+				<td><input type="text" name="vehicle_id" id="vehicle_id" onfocus="removeErrormsg()" /><p class="errormsg" id="msgvehicleno"/></td>
+			</tr>
+			<tr>
+				<td>Quote Date</td>
+				<td><input type="date" name="quote_date" id="quote_date" onfocus="removeErrormsg()" /><p class="errormsg" id="msgquotedate"/></td>
+			</tr>
+			<tr>
+				<td>Quote Status</td>
+				<td><input type="text" name="quote_status" id="quote_status" onfocus="removeErrormsg()" /><p class="errormsg" id="msgquotestatus"/></td>
+			</tr>
+			<tr>
+				<td>Insurer Company</td>
+				<td><input type="text" id="customerclientcompany"
+					name="client_company" onfocus="removeErrormsg()"/><p class="errormsg" id="msgcompany"/></td>
+			</tr>
+			<tr>
+				<td>Policy Type</td>
+				<td><input type="text" name="packagetype" id="packagetype" onfocus="removeErrormsg()" /><p class="errormsg" id="msgpackagetype"/></td>
+			</tr>
+			<tr>
+				<td>IDV</td>
+				<td><input type="number" name="idv" id="idv" onfocus="removeErrormsg()" /><p class="errormsg" id="msgidv"/></td>
+			</tr>
+			<tr>
+				<td>Amount</td>
+				<td><input type="number" name="amount" id="amount" onfocus="removeErrormsg()" /><p class="errormsg" id="msgamount"/></td>
+			</tr>
+			<tr>
+				<td>Description</td>
+				<td><textarea name="description" id="description" onfocus="removeErrormsg()"></textarea></td>
+			</tr>
+		</table>
+		<input type="button" id="Submitbutton" value="Submit" onclick="prepareRequestBody()"/>
+	</form>
+</div>
+
+	<script type="text/javascript">
+		function prepareRequestBody() {
+			var vehicleno=$("#vehicle_id").val();
+			var quotedate=$("#quote_date").val();
+			var quotestatus=$("#quote_status").val();
+			var policytype=$("#packagetype").val();
+			var idv=$("#idv").val();
+			var clientcompany=$("#customerclientcompany").val();
+			var amount=$("#amount").val();
+			if(vehicleno == ""){
+				$("#msgvehicleno").text("*This value is required");
+			}
+			else if(quotedate == ""){
+				$("#msgquotedate").text("*This value is required");
+			}
+			else if(quotestatus == ""){
+				$("#msgquotestatus").text("*This value is required");
+			}
+			else if(clientcompany == ""){
+				$("#msgcompany").text("*This value is required");
+			}
+			else if(policytype == ""){
+				$("#msgpackagetype").text("*This value is required");
+			}
+			else if(idv == ""){
+				$("#msgidv").text("*This value is required");
+			}
+			else if(amount == ""){
+				$("#msgamount").text("*This value is required");
+			}
+			else{
+			var data = {};
+			data.vehicleNo=$("#vehicle_id").val();
+			data.quote_date = $("#quote_date").val();
+			data.quote_status=$("#quote_status").val();
+			data.packagetype=$("#packagetype").val();
+			data.idv = $("#idv").val();
+			data.insurercompany = $("#customerclientcompany").val();
+			data.amount = $("#amount").val();
+			data.description = $("#description").val();
+			apiCall(endpoints.addQuote,data)	
+		}
+		}	
+		function removeErrormsg(){
+			$("p").text("");
+		}
+		
+		function apiCall(endpoint, body) {
+			console.log("Values in api call Body..."+body)
+			console.log("Values in api call Endpoint..."+endpoint)
+			console.log("Inside api call.....")
+			console.log("End point is: " + endpoint)
+			console.log("Body is: " + body)
+			var bearerToken=getCookie();
+			console.log("Bearer token:"+bearerToken)
+			$.ajax({
+				method : 'POST',
+				contentType: 'application/json',
+				beforeSend: function(xhr) {
+	                   xhr.setRequestHeader("Authorization", bearerToken);
+	                },
+				url : endpoint,
+				data : JSON.stringify(body),
+				success : function(data) {
+					success(data);
+					
+				},
+				error : function(error) {
+					alert("Failed to create the quote");
+				}
+			});
+			return false;
+		}
+		function success(data) {
+			console.log("Successfully done...")
+			console.log(data);
+			alert("Successfully created the quote");
+			$("#vehicle_id").val("");
+			$("#quote_date").val(today);
+			$("#quote_status").val("");
+			$("#packagetype").val("");
+			$("#idv").val("");
+			$("#amount").val("");
+			$("#description").val("");
+			$("#customerclientcompany").val("");
+		}
+	</script>
+
+	<script src="https://code.jquery.com/jquery-3.4.1.min.js"
+		integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+		crossorigin="anonymous"></script>
+	<script type="text/javascript">
+		$(document).ready(function() {
+			$("#header").load("header.html",function(){
+				var token=getCookie();
+				if(token =="" || token == null){
+					window.location.href = endpoints.loginHTML;	
+				}
+				else{
+				console.log("Logged in user, so loading the page:"+token)
+				}
+			});
+			$("#footer").load("footer.html");
+		});
+		let today = new Date().toISOString().substr(0, 10);
+		$("#quote_date").val(today);
+	</script> 
+</body>
+</html>

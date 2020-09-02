@@ -1,0 +1,362 @@
+<!-- https://medium.com/@gustavo.ponce.ch/spring-boot-jquery-datatables-a2e816e2b5e9 -->
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Referrer Due Payments</title>
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"></link>
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script
+	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<link rel="stylesheet"
+	href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css"></link>
+<link rel="stylesheet"
+	href="https://cdn.datatables.net/buttons/1.5.6/css/buttons.dataTables.min.css"></link>	
+<script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+<script
+	src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.5.6/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.5.6/js/buttons.flash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.5.6/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.5.6/js/buttons.print.min.js"></script>
+<style>
+table {
+	margin-left: auto;
+	margin-right: auto;
+	background-color: whitesmoke;
+	margin-top: 2%;
+}
+
+#lblfromdate,#lblPolicyNo {
+	margin-left: 10px;
+}
+
+#from_date,#policyNo {
+	margin: 10px 15px 10px 5px;
+}
+
+#to_date,#insurer {
+	margin: 10px 15px 10px 5px;
+}
+
+#paymentType,#referrer {
+	margin: 10px 15px 10px 5px;
+	width: 200px;
+	height: 34px;
+}
+
+#Submit {
+	margin-top: 1%;
+	padding: 10px;
+	color: #FFFFFF;
+	font-weight: bold;
+	text-transform: uppercase;
+	background: #81bc02;
+}
+
+	* Popup box BEGIN */
+.payment_sendSMS_alert{
+    background:rgba(0,0,0,.4);
+    cursor:pointer;
+    height:100%;
+    position:fixed;
+    text-align:center;
+    top:0;
+    width:100%;
+    z-index:10000;
+}
+.payment_sendSMS_alert .helper{
+    display:inline-block;
+    height:100%;
+    vertical-align:middle;
+}
+.payment_sendSMS_alert > div {
+    background-color: #fff;
+    box-shadow: 10px 10px 60px #555;
+    display: inline-block;
+    height: auto;
+    max-width: 551px;
+    min-height: 100px;
+    vertical-align: middle;
+    width: 60%;
+    position: relative;
+    border-radius: 8px;
+    padding: 15px 5%;
+}
+.popupCloseButton {
+    background-color: lightgrey;
+    border: 3px solid #999;
+    border-radius: 50px;
+    cursor: pointer;
+    display: inline-block;
+    font-family: arial;
+    font-weight: bold;
+    position: absolute;
+    top: -20px;
+    right: -20px;
+    font-size: 25px;
+    line-height: 30px;
+    width: 30px;
+    height: 30px;
+    text-align: center;
+}
+.popupCloseButton:hover {
+    background-color: #ccc;
+}
+
+</style>
+
+</head>
+<body>
+	<div id="header" class="scrollmenu"
+		style="position: fixed; width: 100%;"></div>
+	<div id="footer"></div>
+	<div id="body-content" style="padding-top: 120px;">
+		<h1>Referrer Payments</h1>
+		<table id="filter">
+			<tr>
+				<td><label id="lblfromdate">From Date</label> <input
+					type="date" id="from_date" /> <label id="todate">To Date</label> <input
+					type="date" id="to_date" /> <label id="lblpaymentType">Payment Type</label>
+					<select id="paymentType">
+						<option id="all">All</option>
+						<option id="incoming">Incoming</option>
+						<option id="outgoing">Outgoing</option>
+				</select>
+				<label id="lblReferrer">Referrer</label>
+					<input type="text" id="referrer" /></td>
+			</tr>
+		</table>
+		<input type="button" id="Submit" value="Submit">
+		<p id="norecords" style="padding: 10px;" />
+		<table id="consDetails" style="margin-bottom: 15px;">
+			<tr>
+				<td><label id="totalincominglbl" style="padding: 10px;">Total
+						Incoming: </label><label id="totalincoming"
+					style="font-size: large; color: #DC143C;"> </label> <label
+					id="totaloutgoinglbl" style="padding: 10px;">Total Outgoing (Excluding Rebate):
+				</label><label id="totaloutgoing"
+					style="font-size: large; color: #DC143C;"> </label> <label
+					id="totalduelbl" style="padding: 10px;">Total Due: </label><label
+					id="totaldue" style="font-size: large; color: #DC143C;">
+				</label></td>
+			</tr>
+		</table>
+
+		<div id="paymentstotal">
+			<table id="payments" class="display">
+				<!-- Header Table -->
+				<thead>
+					<tr>
+						<th>Customer Name</th>
+						<th>Registration No.</th>
+						<th>Amount</th>
+						<th>Payment Type</th>
+						<th>Referrer</th>
+						<th>Payment Date</th>
+					</tr>
+				</thead>
+				<tfoot>
+					<tr>
+
+					</tr>
+				</tfoot>
+			</table>
+		</div>
+	</div>
+	<script type="text/javascript">
+	function sendSMSCall(endpoint, body){
+		var bearerToken=getCookie();
+		console.log("Bearer token:"+bearerToken)
+		$.ajax({
+			method : 'POST',
+			contentType : 'application/json',
+			beforeSend: function(xhr) {
+                   xhr.setRequestHeader("Authorization", bearerToken);
+                },
+			url : endpoint,
+			data : body,
+			success : function(data) {
+				console.log("Response:"+data)
+				alert("Success..")
+				$(".payment_sendSMS_alert").hide();
+			},
+			error : function(error) {
+				alert("Failure..")
+
+			}
+		});
+	}
+	
+	var paymentslist = [];
+	var paymentids=[];
+
+		function apiCall(endpoint, body) {
+			paymentslist = [];
+			paymentids=[];
+			console.log("Values in api call Body..." + body)
+			console.log("Values in api call Endpoint..." + endpoint)
+			console.log("Inside api call.....")
+			console.log("End point is: " + endpoint)
+			console.log("Body is: " + body)
+			var bearerToken=getCookie();
+			console.log("Bearer token:"+bearerToken)
+			$.ajax({
+				method : 'POST',
+				contentType : 'application/json',
+				beforeSend: function(xhr) {
+	                   xhr.setRequestHeader("Authorization", bearerToken);
+	                },
+				url : endpoint,
+				data : body,
+				success : function(data) {
+					respdata=data.payRefData;
+					paymentslist = respdata.length;
+					console.log("Payments list :***"+paymentslist)
+					for(var i=0;i<paymentslist;i++){
+						paymentids.push(respdata[i].paymentid);
+					}
+					console.log("Payment Ids list: "+paymentids)
+					success(respdata, data);
+				},
+				error : function(error) {
+					alert("Failure..")
+				}
+			});
+			return false;
+		}
+		function success(data,completeresponse) {
+			console.log("Successfully done...")
+			console.log(data);
+			if (data == "") {
+				$("#paymentstotal").hide();
+				$("#consDetails").hide();
+				$("#norecords").text("No Records Found");
+			} else {
+				$("#norecords").text("");
+				$("#consDetails").show();
+				$("#paymentstotal").show();
+			 	$("#totalincoming").text("₹ "+completeresponse.totalIncoming+".00");
+				$("#totaloutgoing").text("₹ "+completeresponse.totalOutgoing+".00");
+				$("#totaldue").text("₹ "+completeresponse.totalDue+".00");
+				table = $('#payments').dataTable({
+					"bAutoWidth" : false,
+					"aaData" : data,
+					dom: 'Bfrtip',
+			        buttons: [
+			            'copy', 'csv', 'excel', 'print'
+			        ],
+					"columns" : [ {
+						"mData" : "customerName"
+					}, {
+						"mData" : "registrationno"
+					}, {
+						"mData" : "amount"
+					}, {
+						"mData" : "paymenttype"
+					}, {
+						"mData" : "refererName"
+					}, {
+						"mData" : "payment_date"
+					}],
+					"destroy" : true
+				})
+			}
+		}
+		
+		$("#Submit").click(function() {
+			var flag=false;
+			var reqbody_temp = []
+			var reqbody_final = {}
+			var startDate = $("#from_date").val();
+			if (startDate) {
+				var array = {};
+				array.attrName = "startdate";
+				array.attrValue = startDate;
+				reqbody_temp.push(array)
+				flag=true;
+			} else {
+				console.log("1")
+				
+			}
+			var endDate = $("#to_date").val();
+			if (endDate) {
+				var array = {};
+				array.attrName = "enddate";
+				array.attrValue = endDate;
+				reqbody_temp.push(array)
+				flag=true;
+			} else {
+				console.log("2")
+			}
+			var filter = $("#paymentType option:selected").val();
+			if (filter == "All") {
+				console.log("3")
+			} else if (filter == "Incoming") {
+				var array = {};
+				array.attrName = "paymenttype";
+				array.attrValue = "incoming";
+				reqbody_temp.push(array)
+				flag=true;
+			} else if (filter == "Outgoing") {
+				var array = {};
+				array.attrName = "paymenttype";
+				array.attrValue = "outgoing";
+				reqbody_temp.push(array)
+				flag=true;
+			}
+			var referer = $("#referrer").val();
+			if (referer) {
+				var array = {};
+				array.attrName = "referername";
+				array.attrValue = referer;
+				reqbody_temp.push(array);
+				flag=true;
+			} else {
+				console.log("4")
+				
+			}
+			if(flag){
+				
+			}
+			else{
+				var array={};
+				reqbody_temp.push(array);
+			}
+			reqbody_final.filterData = reqbody_temp;
+			reqbody_final = JSON.stringify(reqbody_final);
+			apiCall(endpoints.filterPayment, reqbody_final);
+		});
+
+		$(document).ready(function() {
+			$("#header").load("header.html",function(){
+				$(".payment_sendSMS_alert").hide();
+				var token=getCookie();
+				if(token =="" || token == null){
+					window.location.href = endpoints.loginHTML;	
+				}
+				else{
+				console.log("Logged in user, so loading the page:"+token)
+				}
+				var table;
+				let today = new Date().toISOString().substr(0, 10);
+				var reqbody_final={};
+				var reqbody_temp = [];
+				var array={};
+				reqbody_temp.push(array);
+				reqbody_final.filterData=reqbody_temp;
+				apiCall(endpoints.filterPayment, JSON.stringify(reqbody_final));
+			});
+			$('.popupCloseButton').click(function(){
+		        $('.payment_sendSMS_alert').hide();
+		    });
+			//$("#footer").load("footer.html");
+		});
+	</script>
+</body>
+</html>

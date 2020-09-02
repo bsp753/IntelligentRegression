@@ -1,0 +1,238 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<script
+	src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
+<script
+	src="http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.2/modernizr.js"></script>
+<title>SabkaInsurance</title>
+</head>
+<body>
+	<div id="header" class="scrollmenu"
+		style="position: fixed; width: 100%;"></div>
+	<div id="footer"></div>
+	<div id="body-content" style="padding-top: 120px;">
+		<h1>Update Referrer Payment</h1>
+		<form id="registercustomer">
+			<table class="sub" style="width: 40%">
+				<tr>
+					<td>Referrer Name</td>
+					<td><input type="text" id="referrerName"
+						name="referrerName" /></td>
+				</tr>
+			</table>
+			<button type="button" class="updatedetails" id="updatePayment"
+				style="width: 25%">Submit</button>
+		</form>
+		<p id="showData"></p>
+	</div>
+	<div class="form-popup" id="myForm">
+		<form method="post" action="updateReferrerPayment" class="form-container">
+			<h2>Update Referrer Payment Details</h2>
+
+			<table class="sub" style="width: 100%">
+				<tr>
+					<td>Referrer Name*</td>
+					<td><input type="text" id="customerupdatedname" name="name"
+						onfocus="removeErrormsg()" />
+					<p class="errormsg" id="msgupname" /></td>
+				</tr>
+				<tr>
+					<td>Payment Date</td>
+					<td><input type="date" id="updatedpaymentdate"
+						name="updatedpaymentdate" onfocus="removeErrormsg()" />
+					<p class="errormsg" id="msgupdatedpaymentdate" /></td>
+				</tr>
+				<tr>
+					<td>Payment Amount*</td>
+					<td><input type="text" id="updatedpaymentamount"
+						name="updatedpaymentamount" onfocus="removeErrormsg()" />
+					<p class="errormsg" id="msgupdatedpaymentamount" /></td>
+				</tr>
+			</table>
+			<input class="updatesubmit" type="button" id="updateRefPaymentSubmit"
+				value="Submit" /> <input class="updateclose" type="button"
+				value="Close" onclick="closeForm()" />
+		</form>
+	</div>
+	<script type="text/javascript">
+		function prepareRequestBody(referrerpaymentid) {
+			var upatedname = $("#customerupdatedname").val();
+			var updatedpaymentdate = $("#updatedpaymentdate").val();
+			var updatedpaymentamount = $("#updatedpaymentamount").val();
+			if (upatedname == "") {
+				$("#msgupname").text("*This value is required");
+			} else if (updatedpaymentdate == "") {
+				$("#msgupdatedpaymentdate").text("*This value is required");
+			} else if (updatedpaymentamount == "") {
+				$("#msgupdatedpaymentamount").text("*This value is required");
+			}
+			else {
+				var data = {};
+				data.referrerName = $("#customerupdatedname").val();
+				data.payment_date = $("#updatedpaymentdate").val();
+				data.amount = $("#updatedpaymentamount").val();
+				var endpoint = endpoints.updateReferrerPayment;
+				endpoint = endpoint.replace('id', referrerpaymentid);
+				apiPutCall(endpoint, data)
+			}
+		}
+
+		function removeErrormsg() {
+			$("p").text("");
+		}
+
+		function apiDeleteCall(referrerPaymentId) {
+			var endpoint = endpoints.deleteReferrerPayment;
+			endpoint = endpoint.replace("id", referrerPaymentId);
+			console.log("Values in api call Body..." + body)
+			console.log("Values in api call Endpoint..." + endpoint)
+			console.log("Inside api call.....")
+			console.log("End point is: " + endpoint)
+			console.log("Body is: " + body)
+			var bearerToken=getCookie();
+			console.log("Bearer token:"+bearerToken)
+			$.ajax({
+				method : 'DELETE',
+				contentType : 'application/json',
+				beforeSend: function(xhr) {
+	                   xhr.setRequestHeader("Authorization", bearerToken);
+	                },
+				url : endpoint,
+				success : function(data) {
+					success2(data);
+
+				},
+				error : function(error) {
+					alert("Failed to delete the Payment details")
+				}
+			});
+			return false;
+		}
+		function success2(data) {
+			console.log("Successfully done...")
+			console.log(data);
+			alert("Successfully deleted the Payment details")
+			whatever();
+		}
+		function apiPutCall(endpoint, body) {
+			console.log("Values in api call Body..." + body)
+			console.log("Values in api call Endpoint..." + endpoint)
+			console.log("Inside api call.....")
+			console.log("End point is: " + endpoint)
+			console.log("Body is: " + body)
+			var bearerToken=getCookie();
+			console.log("Bearer token:"+bearerToken)
+			$.ajax({
+				method : 'PUT',
+				contentType : 'application/json',
+				beforeSend: function(xhr) {
+	                   xhr.setRequestHeader("Authorization", bearerToken);
+	                },
+				url : endpoint,
+				data : JSON.stringify(body),
+				success : function(data) {
+					success(data);
+
+				},
+				error : function(error) {
+					alert("Failed to update the customer details")
+				}
+			});
+			return false;
+		}
+		function success(data) {
+			console.log("Successfully done...")
+			console.log(data);
+			alert("Successfully updated the customer details")
+			closeForm();
+			whatever();
+
+		}
+
+		function whatever() {
+			var referrerName = $('#referrerName').val();
+			console.log("Referrer Name: " + referrerName)
+			endpoint = endpoints.getReferrerPayment;
+			console.log("End point is: " + endpoint)
+			body = ""
+			endpoint = endpoint.replace("id", referrerName);
+			console.log("Updated Endpoint is: " + endpoint);
+			apiQuoteCall(endpoint, body);
+		}
+
+		$("#updatePayment").click(whatever);
+
+		function apiQuoteCall(endpoint, body) {
+			console.log("End point: " + endpoint)
+			console.log("Inside api call.....")
+			console.log("End point is: " + endpoint)
+			console.log("Body is: " + body)
+			var bearerToken=getCookie();
+			console.log("Bearer token:"+bearerToken)
+			$.ajax({
+				method : 'GET',
+				beforeSend: function(xhr) {
+	                   xhr.setRequestHeader("Authorization", bearerToken);
+	                },
+				url : endpoint,
+				success : function(data) {
+					success1(data);
+				},
+				error : function(error) {
+					alert(error);
+				}
+			});
+			return false;
+		}
+		function success1(data) {
+			console.log("Successfully done...")
+			console.log(data);
+			if (data.length == 0) {
+				console.log("There is no response....")
+				$("#showData").text("No Records Found")
+			} else {
+				parseData(data);
+			}
+
+			//CreateTableFromJSON(data);
+		}
+		function parseData(data) {
+			const c = [];
+			for (var i = 0; i < data.length; i++) {
+				const b = {};
+				for ( var j in data[i]) {
+					if (typeof (data[i][j]) !== 'object') {
+						b[j] = data[i][j];
+					}
+				}
+				if (Object.keys(b).length) {
+					c.push(b);
+				}
+			}
+			console.log(c);
+			//data=JSON.stringify(c);
+			CreateTableFromJSON(c, "refpaymentid");
+		}
+	</script>
+
+	<script src="https://code.jquery.com/jquery-3.4.1.min.js"
+		integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+		crossorigin="anonymous"></script>
+	 
+	<script type="text/javascript">
+		$(document).ready(function() {
+			$("#header").load("header.html",function(){
+				var token=getCookie();
+				if(token =="" || token == null){
+					window.location.href = endpoints.loginHTML;	
+				}
+				else{
+				console.log("Logged in user, so loading the page:"+token)
+				}
+			});
+			$("#footer").load("footer.html");
+		});
+	</script>
+</body>
+</html>

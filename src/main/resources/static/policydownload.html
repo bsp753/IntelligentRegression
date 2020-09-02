@@ -1,0 +1,213 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<script
+	src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>	
+<script
+	src="http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.2/modernizr.js"></script>
+<title>Policy Download</title>
+</head>
+<body>
+	<div id="header" class="scrollmenu"
+		style="position: fixed; width: 100%;"></div>
+	<div id="footer"></div>
+	<div id="body-content" style="padding-top: 120px;">
+		<h1>Update Transaction</h1>
+		<form id="registercustomer">
+			<table class="sub" style="width: 40%">
+				<tr>
+					<td>Vehicle Number</td>
+					<td><input type="text" id="vehiclenumber" name="vehiclenumber" /></td>
+				</tr>
+			</table>
+			<button type="button" class="updatedetails" id="updatetransaction"
+				style="width: 25%">Submit</button>
+		</form>
+		<p id="showData"></p>
+	</div>
+	<script type="text/javascript">
+		function removeErrormsg() {
+			$("p").text("");
+		}
+
+		function downloadRecord(downloadid) {
+			var endpoint = endpoints.downloadRecord;
+			endpoint = endpoint.replace("id", downloadid);
+			console.log("End point: " + endpoint)
+			var bearerToken=getCookie();
+			console.log("Bearer token:"+bearerToken)
+			$.ajax({
+				method : 'GET',
+				beforeSend: function(xhr) {
+	                   xhr.setRequestHeader("Authorization", bearerToken);
+	                },
+				url : endpoint,
+				xhrFields : {
+					responseType : 'blob'
+				},
+				success : function(data) {
+					var a = document.createElement('a');
+					var url = window.URL.createObjectURL(data);
+					a.href = url;
+					a.download = 'fileCopy';
+					document.body.append(a);
+					a.click();
+					a.remove();
+					window.URL.revokeObjectURL(url);
+					alert("Successfully downloaded the file")
+				},
+				error : function(error) {
+					alert("Failed to download the file");
+				}
+			});
+			return false;
+		}
+		function success4(data) {
+			console.log("Successfully done...")
+			console.log(data);
+			alert("Successfully downloaded the file")
+		}
+
+		function whatever() {
+			console.log("Inside function...")
+			var vehiclenumber = $('#vehiclenumber').val();
+			console.log("Vehicle number: " + vehiclenumber)
+			endpoint = endpoints.getPolicy;
+			console.log("End point is: " + endpoint)
+			body = ""
+			endpoint = endpoint.replace("id", vehiclenumber);
+			console.log("Updated Endpoint is: " + endpoint);
+			apiQuoteCall(endpoint, body);
+		}
+
+		$("#updatetransaction").click(whatever)
+
+	function sendEmailCall(endpoint, body) {
+			console.log("Values in api call Body..."+body)
+			console.log("Values in api call Endpoint..."+endpoint)
+			var bearerToken=getCookie();
+			console.log("Bearer token:"+bearerToken)
+			$.ajax({
+				method : 'POST',
+				contentType: 'application/json',
+				beforeSend: function(xhr) {
+	                   xhr.setRequestHeader("Authorization", bearerToken);
+	                },
+				url : endpoint,
+				data : JSON.stringify(body),
+				success : function(data) {
+					success(data);
+					
+				},
+				error : function(error) {
+					alert("Failed to send the email")
+
+				}
+			});
+			return false;
+		}
+		function success(data) {
+			console.log(data);
+			alert("Email sent successfully")
+		}
+		
+		function apiQuoteCall(endpoint, body) {
+			console.log("End point: " + endpoint)
+			console.log("Inside api call.....")
+			console.log("End point is: " + endpoint)
+			console.log("Body is: " + body)
+			var bearerToken=getCookie();
+			console.log("Bearer token:"+bearerToken)
+			$.ajax({
+				method : 'GET',
+				beforeSend: function(xhr) {
+	                   xhr.setRequestHeader("Authorization", bearerToken);
+	                },
+				url : endpoint,
+				success : function(data) {
+					success1(data);
+				},
+				error : function(error) {
+					alert(error);
+				}
+			});
+			return false;
+		}
+		function success1(data) {
+			console.log("Successfully done...")
+			console.log(data);
+			if (data.length == 0) {
+				console.log("There is no response....")
+				$("#showData").text("No Records Found")
+			} else {
+				parseData(data);
+			}
+		}
+		function parseData(data) {
+			console.log(data)
+			console.log(data.length)
+			var finalarr={};
+			const c = [];
+			for (var i = 0; i < data.length; i++) {
+				const b = {};
+						b.paymentId=data[i].paymentId;
+						b.email=data[i].email;
+						b.paymentDate=data[i].paymentDate;
+						b.registrationNumber=data[i].registrationNumber;
+						b.fileUUID=data[i].fileUUID;
+						c.push(b);
+			}
+			console.log(c);
+			finalarr=c;
+			console.log(finalarr);
+			CreateTableFromJSON(c, "transactionid",true);
+		}
+	</script>
+	<script src="https://code.jquery.com/jquery-3.4.1.min.js"
+		integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+		crossorigin="anonymous"></script>
+<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.5.6/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.5.6/js/buttons.flash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.5.6/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.5.6/js/buttons.print.min.js"></script>
+		
+		
+	<script type="text/javascript">
+		$(document).ready(function() {
+			$("#header").load("header.html",function(){
+				console.log("Header is loaded..")
+				var token=getCookie();
+				if(token =="" || token == null){
+					window.location.href = endpoints.loginHTML;	
+				}
+				else{
+				console.log("Logged in user, so loading the page:"+token)
+				}
+			});
+			$("#showData").on('click','.Downloadtransactionid',function(){
+				var selectedRecord=$(this).attr("id");
+				console.log("Selected Record id: "+selectedRecord);
+				downloadRecord(selectedRecord);
+				
+			});
+			$("#showData").on('click','.sendemail',function(){
+				var selectedRecord=$(this).closest('tr').find('td:nth-child(1)').text();
+				var emailaddress=$(this).closest('tr').find('td:nth-child(2)').text();
+				console.log("Selected Record id: "+selectedRecord);
+				var endpoint=endpoints.sendEmail;
+				var body = {};
+				body.toEmail=emailaddress;
+				body.paymentId=parseInt(selectedRecord);
+				console.log("Body is:"+body);
+				sendEmailCall(endpoint,body);
+			});
+			$("#footer").load("footer.html");
+		});
+		
+	</script>
+</body>
+</html>

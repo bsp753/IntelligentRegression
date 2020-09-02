@@ -1,0 +1,269 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<script
+	src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
+<script
+	src="http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.2/modernizr.js"></script>
+<title>LARP Tracker</title>
+</head>
+<body>
+	<div id="header" class="scrollmenu"
+		style="position: fixed; width: 100%;"></div>
+	<div id="footer"></div>
+	<div id="body-content" style="padding-top: 120px;">
+		<h1>Update Customer</h1>
+		<form id="registercustomer">
+			<table class="sub" style="width: 40%">
+				<tr>
+					<td>Customer Name</td>
+					<td><input type="text" id="customerId_Name"
+						name="customerId_Name" /></td>
+				</tr>
+			</table>
+			<button type="button" class="updatedetails" id="updatecustomer"
+				style="width: 25%">Submit</button>
+		</form>
+		<p id="showData"></p>
+	</div>
+	<div class="form-popup" id="myForm">
+		<form method="post" action="newcustomer" class="form-container">
+			<h2>Update Customer Details</h2>
+
+			<table class="sub" style="width: 100%">
+				<tr>
+					<td>Name*</td>
+					<td><input type="text" id="customerupdatedname" name="name"
+						onfocus="removeErrormsg()" />
+					<p class="errormsg" id="msgupname" /></td>
+				</tr>
+				<tr>
+					<td>Phone No.*</td>
+					<td><input type="text" id="customerupdatedphone_no"
+						name="phone_no" maxlength=10 onfocus="removeErrormsg()" />
+					<p class="errormsg" id="msgupnumber" /></td>
+				</tr>
+				<tr>
+					<td>Email*</td>
+					<td><input type="text" id="customerupdatedemail"
+						name="contactPerson" onfocus="removeErrormsg()" />
+					<p class="errormsg" id="msgupcontact" /></td>
+				</tr>
+				<tr>
+					<td>Referrer*</td>
+					<td><input type="text" id="customerupdatedreferer"
+						name="referer" onfocus="removeErrormsg()" />
+					<p class="errormsg" id="msgupreferrer" /></td>
+				</tr>
+				<!-- <tr>
+					<td>Client Company*</td>
+					<td><input type="text" id="customerupdatedclient_company"
+						name="client_company" onfocus="removeErrormsg()" /><p class="errormsg" id="msgupcompany"/></td>
+				</tr> -->
+				<tr>
+					<td>Acquisition Status*</td>
+					<td><select id="customerupdatedacquisition_status">
+							<option>Open</option>
+							<option>Closed</option>
+					</select></td>
+				</tr>
+			</table>
+			<input class="updatesubmit" type="button" id="updateCustomerSubmit"
+				value="Submit" /> <input class="updateclose" type="button"
+				value="Close" onclick="closeForm()" />
+		</form>
+	</div>
+	<script type="text/javascript">
+		function prepareRequestBody(customerid) {
+			var customername = $("#customerupdatedname").val();
+			var customerphonenumber = $("#customerupdatedphone_no").val();
+			var customercontact = $("#customerupdatedemail").val();
+			var customerreferrer = $("#customerupdatedreferer").val();
+			/* var clientcompany=$("#customerupdatedclient_company").val(); */
+			if (customername == "") {
+				$("#msgupname").text("*This value is required");
+			} else if (customerphonenumber == "") {
+				$("#msgupnumber").text("*This value is required");
+			} else if (customercontact == "") {
+				$("#msgupcontact").text("*This value is required");
+			} else if (customerreferrer == "") {
+				$("#msgupreferrer").text("*This value is required");
+			}
+			/* else if(clientcompany == ""){
+				$("#msgupcompany").text("*This value is required");
+			} */
+			else {
+				var data = {};
+				data.name = $("#customerupdatedname").val();
+				data.phone_no = $("#customerupdatedphone_no").val();
+				data.email = $("#customerupdatedemail").val();
+				data.referer = $("#customerupdatedreferer").val();
+				/* data.client_company = $("#customerupdatedclient_company")
+						.val(); */
+				data.acquisition_status = $(
+						"#customerupdatedacquisition_status").val();
+				var endpoint = endpoints.updateCustomer;
+				endpoint = endpoint.replace('id', customerid);
+				apiPutCall(endpoint, data)
+			}
+		}
+
+		function removeErrormsg() {
+			$("p").text("");
+		}
+
+		function apiDeleteCall(customerid) {
+			var endpoint = endpoints.deleteCustomer;
+			endpoint = endpoint.replace("id", customerid);
+			console.log("Values in api call Body..." + body)
+			console.log("Values in api call Endpoint..." + endpoint)
+			console.log("Inside api call.....")
+			console.log("End point is: " + endpoint)
+			console.log("Body is: " + body)
+			var bearerToken=getCookie();
+			console.log("Bearer token:"+bearerToken)
+			$.ajax({
+				method : 'DELETE',
+				contentType : 'application/json',
+				beforeSend: function(xhr) {
+	                   xhr.setRequestHeader("Authorization", bearerToken);
+	                },
+				url : endpoint,
+				success : function(data) {
+					success2(data);
+
+				},
+				error : function(error) {
+					alert("Failed to delete the customer details")
+				}
+			});
+			return false;
+		}
+		function success2(data) {
+			console.log("Successfully done...")
+			console.log(data);
+			alert("Successfully deleted the customer details")
+			whatever();
+		}
+		function apiPutCall(endpoint, body) {
+			console.log("Values in api call Body..." + body)
+			console.log("Values in api call Endpoint..." + endpoint)
+			console.log("Inside api call.....")
+			console.log("End point is: " + endpoint)
+			console.log("Body is: " + body)
+			var bearerToken=getCookie();
+			console.log("Bearer token:"+bearerToken)
+			$.ajax({
+				method : 'PUT',
+				contentType : 'application/json',
+				beforeSend: function(xhr) {
+	                   xhr.setRequestHeader("Authorization", bearerToken);
+	                },
+				url : endpoint,
+				data : JSON.stringify(body),
+				success : function(data) {
+					success(data);
+
+				},
+				error : function(error) {
+					alert("Failed to update the customer details")
+				}
+			});
+			return false;
+		}
+		function success(data) {
+			console.log("Successfully done...")
+			console.log(data);
+			alert("Successfully updated the customer details")
+			closeForm();
+			whatever();
+
+		}
+
+		function whatever() {
+			console.log("Inside function...")
+			var customername = $('#customerId_Name').val();
+			console.log("Customer number: " + customername)
+			endpoint = endpoints.getCustomer;
+			console.log("End point is: " + endpoint)
+			body = ""
+			endpoint = endpoint.replace("id", customername);
+			console.log("Updated Endpoint is: " + endpoint);
+			apiQuoteCall(endpoint, body);
+		}
+
+		$("#updatecustomer").click(whatever);
+
+		function apiQuoteCall(endpoint, body) {
+			console.log("End point: " + endpoint)
+			console.log("Inside api call.....")
+			console.log("End point is: " + endpoint)
+			console.log("Body is: " + body)
+			var bearerToken=getCookie();
+			console.log("Bearer token:"+bearerToken)
+			$.ajax({
+				method : 'GET',
+				beforeSend: function(xhr) {
+	                   xhr.setRequestHeader("Authorization", bearerToken);
+	                },
+				url : endpoint,
+				success : function(data) {
+					success1(data);
+				},
+				error : function(error) {
+					alert(error);
+				}
+			});
+			return false;
+		}
+		function success1(data) {
+			console.log("Successfully done...")
+			console.log(data);
+			if (data.length == 0) {
+				console.log("There is no response....")
+				$("#showData").text("No Records Found")
+			} else {
+				parseData(data);
+			}
+
+			//CreateTableFromJSON(data);
+		}
+		function parseData(data) {
+			const c = [];
+			for (var i = 0; i < data.length; i++) {
+				const b = {};
+				for ( var j in data[i]) {
+					if (typeof (data[i][j]) !== 'object') {
+						b[j] = data[i][j];
+					}
+				}
+				if (Object.keys(b).length) {
+					c.push(b);
+				}
+			}
+			console.log(c);
+			//data=JSON.stringify(c);
+			CreateTableFromJSON(c, "custid");
+		}
+	</script>
+
+	<script src="https://code.jquery.com/jquery-3.4.1.min.js"
+		integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+		crossorigin="anonymous"></script>
+	 
+	<script type="text/javascript">
+		$(document).ready(function() {
+			$("#header").load("header.html",function(){
+				var token=getCookie();
+				if(token =="" || token == null){
+					window.location.href = endpoints.loginHTML;	
+				}
+				else{
+				console.log("Logged in user, so loading the page:"+token)
+				}
+			});
+			$("#footer").load("footer.html");
+		});
+	</script>
+</body>
+</html>

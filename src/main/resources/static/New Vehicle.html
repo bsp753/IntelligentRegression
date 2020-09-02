@@ -1,0 +1,148 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>LARP Tracker</title>
+</head>
+<body>
+
+	<div id="header" class="scrollmenu" style="
+    position: fixed;
+    width: 100%;
+"></div>
+	<div id="footer"></div>
+	<div id="body-content" style="
+    padding-top: 120px;
+">
+	<h1>Add Vehicle</h1>
+	<form id="newvehicle">
+		<table class="sub" style="width: 40%">
+			<tr>
+				<td>Customer Id</td>
+				<td><input type="text" id="customerId" name="customerId" onfocus="removeErrormsg()" /><p class="errormsg" id="msgcustId"/></td>
+			</tr>
+			<tr>
+				<td>Vehicle No.</td>
+				<td><input type="text" id="vehicle_no" name="vehicle_no" onfocus="removeErrormsg()" /><p class="errormsg" id="msgvehicleno"/></td>
+			</tr>
+			<tr>
+				<td>Expiry</td>
+				<td><input type="date" id="expiry_date" name="expiry_date" onfocus="removeErrormsg()"/><p class="errormsg" id="msgexpiry"/></td>
+			</tr>
+			<tr>
+				<td>Model</td>
+				<td><input type="text" id="model" name="model" onfocus="removeErrormsg()" /><p class="errormsg" id="msgmodel"/></td>
+			</tr>
+		</table>
+<input type="button" id="Submitbutton" value="Submit" onclick="prepareRequestBody()"/>
+	</form>
+</div>
+
+	<script type="text/javascript">
+		function prepareRequestBody() {
+			var customerId=$("#customerId").val();
+			var vehicleno=$("#vehicle_no").val();
+			var expiry=$("#expiry_date").val();
+			var model=$("#model").val();
+			if(customerId == ""){
+				$("#msgcustId").text("*This value is required");
+			}
+			else if(vehicleno == ""){
+				$("#msgnumber").text("*This value is required");
+			}
+			else if(expiry == ""){
+				$("#msgexpiry").text("*This value is required");
+			}
+			else if(model == ""){
+				$("#msgmodel").text("*This value is required");
+			}
+			else{
+			var data = {};
+			data.registrationNumber = $("#vehicle_no").val();
+			data.modelNumber = $("#model").val();
+			data.expiryDate = $("#expiry_date").val();
+			data.customerId = $("#customerId").val();
+
+			apiCall(endpoints.addVehicle, data)
+		}
+		}	
+		function removeErrormsg(){
+			$("p").text("");
+		}
+		
+		function apiCall(endpoint, body) {
+			console.log("Values in api call Body..." + body)
+			console.log("Values in api call Endpoint..." + endpoint)
+			console.log("Inside api call.....")
+			console.log("End point is: " + endpoint)
+			console.log("Body is: " + body)
+			var bearerToken=getCookie();
+			console.log("Bearer token:"+bearerToken)
+			$.ajax({
+				method : 'POST',
+				contentType : 'application/json',
+				beforeSend: function(xhr) {
+	                   xhr.setRequestHeader("Authorization", bearerToken);
+	                },
+				url : endpoint,
+				data : JSON.stringify(body),
+				success : function(data) {
+					success(data);
+
+				},
+				error : function(error) {
+					alert("Failed to add the vehicle");
+				}
+			});
+			return false;
+		}
+		function success(data) {
+			console.log("Successfully done...")
+			console.log(data);
+			alert("Successfully added the vehicle");
+			sessionStorage.setItem('newVehicleNumber',$("#vehicle_no").val());
+			var date=new Date($("#expiry_date").val());
+			year=date.getFullYear();
+			day=date.getDate();
+			month=(date.getMonth());
+			let event = new Date();
+			event.setDate(day);
+			event.setMonth(month);
+			event.setYear(year);
+			sessionStorage.setItem('newVehicleExpiryDate',event.toISOString().substr(0,10));
+			console.log("vehicle expiry date:"+sessionStorage.getItem("newVehicleExpiryDate"));
+			sessionStorage.setItem('newVehicleNumberFlag',"true");
+			$("#vehicle_no").val("");
+			$("#model").val("");
+			$("#expiry_date").val("");
+			$("#customerId").val("");
+			window.location.href = endpoints.newPaymentHTML;
+		}
+	</script>
+
+	 <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+		integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+		crossorigin="anonymous"></script>
+	<script type="text/javascript">
+		$(document).ready(function() {
+			$("#header").load("header.html",function(){
+				var token=getCookie();
+				var customerflag=sessionStorage.getItem('newCustomerIdFlag');
+				if(customerflag=='true'){
+					$("#customerId").val(sessionStorage.getItem('newCustomerId'));
+				}
+				else{
+					
+				}
+				sessionStorage.setItem('newCustomerIdFlag',"false");
+				if(token =="" || token == null){
+					window.location.href = endpoints.loginHTML;	
+				}
+				else{
+				console.log("Logged in user, so loading the page:"+token)
+				}
+			});
+			$("#footer").load("footer.html");
+		});
+	</script>
+</body>
+</html>

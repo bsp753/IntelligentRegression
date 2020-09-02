@@ -1,0 +1,96 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"
+		integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+		crossorigin="anonymous"></script>
+<title>SabkaInsurance</title>
+</head>
+<body>
+
+	<div id="header" class="scrollmenu" style="
+    position: fixed;
+    width: 100%;
+"></div>
+	<div id="footer"></div>
+	<div id="body-content" style="
+    padding-top: 120px;
+">
+	<h1>Upload Commission</h1>
+	<form>
+		<table class="sub" style="width: 40%">
+		<tr>
+				<td>Commission Copy</td>
+				<td><input type="file" id="file" name="file" /></td>
+			</tr>
+		</table>
+		<input type="submit" id="Submitbutton" value="Submit"/>
+	</form>
+	<div id="parsedoutput">
+	<table id="parsedoutput" class="sub" style="width: 80%">
+	<tr>
+	<td><p id="parseddata" style="
+    border: black;
+    background-color: gainsboro;
+	"></p> </td>
+	</tr>
+	</table>
+	</div>
+</div>
+<script type="text/javascript">
+$("form").submit(function(evt){
+	evt.preventDefault();
+	var formData = new FormData($(this)[0]);
+	var fileExists = $("#file").val();
+	console.log("File Exists:"+fileExists)
+	if(fileExists == null || fileExists == ""){
+		console.log("File doesn't exists, so not making the call")
+	}
+	else{
+		fileUploadCall(formData);	
+	}	
+	});
+	function fileUploadCall(formData){
+		var endpoint=endpoints.uploadCommission;
+		console.log("File upload end point..."+endpoint)
+		var bearerToken=getCookie();
+		console.log("Bearer token:"+bearerToken)
+		  $.ajax({
+			  beforeSend: function(xhr) {
+                   xhr.setRequestHeader("Authorization", bearerToken);
+                },
+		       url: endpoint,
+		       type: 'POST',
+		       data: formData,
+		       async: false,
+		       cache: false,
+		       contentType: false,
+		       processData: false,
+		       success: function (response) {
+		    	   console.log(response)
+		    	   $("#parsedoutput").show();
+		    	   $("#parseddata").text(response)
+		    	   $("#file").val("");
+		    	   alert("Commission details are saved succesfully")
+		       }
+		   });
+		}
+</script>
+	
+	<script type="text/javascript">
+		$(document).ready(function() {
+			$("#header").load("header.html",function(){
+				var token=getCookie();
+				if(token =="" || token == null){
+					window.location.href = endpoints.loginHTML;	
+				}
+				else{
+				console.log("Logged in user, so loading the page:"+token)
+				}
+			});
+			$("#footer").load("footer.html");
+			$("#parsedoutput").hide();
+		});
+	</script> 
+</body>
+</html>

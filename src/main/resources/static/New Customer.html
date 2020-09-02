@@ -1,0 +1,143 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>LARP Tracker</title>
+</head>
+<body>
+	<div id="header" class="scrollmenu" style="
+    position: fixed;
+    width: 100%;
+"></div>
+    <div id="footer"></div>
+    <div id="body-content" style="
+    padding-top: 120px;padding-bottom: 50px;
+">
+	<h1>Add Customer</h1>
+	<form id="newcustomer">
+		<table class="sub" style="width: 40%">
+			<tr>
+				<td>Name*</td>
+				<td><input type="text" id="customername" name="name" onfocus="removeErrormsg()" /><p class="errormsg" id="msgname"/></td>
+			</tr>
+			<tr>
+				<td>Phone No.*</td>
+				<td><input type="text" id="customerphonenumber" name="phone_no" maxlength=10 onfocus="removeErrormsg()" /><p class="errormsg" id="msgnumber"/></td>
+			</tr>
+			<tr>
+				<td>Email*</td>
+				<td><input type="text" id="customeremail"
+					name="customeremail" onfocus="removeErrormsg()" /><p class="errormsg" id="msgcontact"/></td>
+			</tr>
+			<tr>
+				<td>Referrer*</td>
+				<td><input type="text" id="customerreferrer" name="referer" onfocus="removeErrormsg()" /><p class="errormsg" id="msgreferrer"/></td>
+			</tr>
+			<tr>
+				<td>Acquisition Status*</td>
+				<td>
+						<select id="customeracqstatus">
+							<option>Open</option>
+							<option>Closed</option>
+						</select>
+				</td>
+			</tr>
+		</table>
+			<input type="button" id="Submitbutton" value="Submit" onclick="prepareRequestBody()"/>
+	</form>
+</div>
+
+	<script type="text/javascript">
+		function prepareRequestBody() {
+			var customername=$("#customername").val();
+			var customerphonenumber=$("#customerphonenumber").val();
+			var customercontact=$("#customeremail").val();
+			var customerreferrer=$("#customerreferrer").val();
+			//var clientcompany=$("#customerclientcompany").val();
+			if(customername == ""){
+				$("#msgname").text("*This value is required");
+			}
+			else if(customerphonenumber == ""){
+				$("#msgnumber").text("*This value is required");
+			}
+			else if(customercontact == ""){
+				$("#msgcontact").text("*This value is required");
+			}
+			else if(customerreferrer == ""){
+				$("#msgreferrer").text("*This value is required");
+			}
+			else{
+				var data = {};
+				data.name = $("#customername").val();
+				data.phone_no = $("#customerphonenumber").val();
+				data.email = $("#customeremail").val();
+				data.referer = $("#customerreferrer").val();
+				data.acquisition_status = $("#customeracqstatus").val();
+				apiCall(endpoints.addCustomer,data)	
+		}
+		}		
+		
+		function removeErrormsg(){
+			$("p").text("");
+		}
+		
+		function apiCall(endpoint, body) {
+			console.log("Values in api call Body..."+body)
+			console.log("Values in api call Endpoint..."+endpoint)
+			console.log("Inside api call.....")
+			console.log("End point is: " + endpoint)
+			console.log("Body is: " + body)
+			var bearerToken=getCookie();
+			console.log("Bearer token:"+bearerToken)
+			$.ajax({
+				method : 'POST',
+				contentType: 'application/json',
+				beforeSend: function(xhr) {
+	                   xhr.setRequestHeader("Authorization", bearerToken);
+	                },
+				url : endpoint,
+				data : JSON.stringify(body),
+				success : function(data) {
+					success(data);
+					
+				},
+				error : function(error) {
+					alert("Failed to created the customer")
+
+				}
+			});
+			return false;
+		}
+		function success(data) {
+			console.log(data);
+			var customerId=data.customerid;
+			alert("Successfully created the customer with the id: "+data.customerid)
+			$("#customername").val("");
+			$("#customerphonenumber").val("");
+			$("#customeremail").val("");
+			$("#customerreferrer").val("");
+			$("#customeracqstatus").val("Open");
+			sessionStorage.setItem('newCustomerId',customerId);
+			sessionStorage.setItem('newCustomerIdFlag',"true");
+			window.location.href = endpoints.newVehicleHTML;
+		}
+	</script>
+	
+	 <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+		integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+		crossorigin="anonymous"></script>
+	<script type="text/javascript">
+		$(document).ready(function() {
+			$("#header").load("header.html",function(){
+				var token=getCookie();
+				if(token =="" || token == null){
+					window.location.href = endpoints.loginHTML;	
+				}
+				else{
+				console.log("Logged in user, so loading the page:"+token)
+				}
+			});
+			$("#footer").load("footer.html");
+		});
+	</script>
+</body>
+</html>

@@ -1,0 +1,27 @@
+.page-title{
+	font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
+	margin:40px 0px;
+}
+#collection_result_table thead{
+	background-color:#444d58;
+	color:#ffffff;
+}
+#collection_result_table_wrapper{
+	margin-bottom:20px;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.current, 
+.dataTables_wrapper .dataTables_paginate .paginate_button.current:hover{
+	color: #ffffff !important;
+	border: 1px solid #444d58;
+    border-radius: 50% !important;
+    background-color: #444d58;
+    background: #444d58;
+}
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover{
+	color: #ffffff !important;
+	border: 1px solid #444d58;
+    border-radius: 50% !important;
+    background-color: #444d58;
+    background: #444d58;
+}

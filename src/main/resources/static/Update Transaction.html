@@ -1,0 +1,387 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<script
+	src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
+<script
+	src="http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.2/modernizr.js"></script>
+
+
+
+<title>LARP Tracker</title>
+</head>
+<body>
+	<div id="header" class="scrollmenu" style="
+    position: fixed;
+    width: 100%;"></div>
+	<div id="footer"></div>
+	<div id="body-content" style="
+    padding-top: 120px;">
+	<h1>Update Transaction</h1>
+	<form id="registercustomer">
+		<table class="sub" style="width: 40%">
+			<tr>
+				<td>Vehicle Number</td>
+				<td><input type="text" id="vehiclenumber" name="vehiclenumber" /></td>
+			</tr>
+		</table>
+		<button type="button" class="updatedetails" id="updatetransaction"
+			style="width: 25%">Submit</button>
+	</form>
+	<p id="showData"></p>
+</div>
+	<div class="form-popup" id="myForm">
+		<form>
+		<h2>Update Transaction Details</h2>
+		<table class="sub" style="width: 40%">
+			<tr>
+				<td>Payment Date</td>
+				<td><input type="date" id="updated_paymentdate" name="paymentdate" onfocus="removeErrormsg()" /><p class="errormsg" id="msgupdatepaymentdate"/></td>
+			</tr>
+			<tr>
+				<td>Policy No.</td>
+				<td><input type="text" id="updated_policyno" name="policyno" onfocus="removeErrormsg()" /><p class="errormsg" id="msgupdatepolicyno"/></td>
+			</tr>
+			<tr>
+				<td>Insurer Company</td>
+				<td><input type="text" id="updated_insurer_company" name="insurer_company" onfocus="removeErrormsg()" /><p class="errormsg" id="msgupdateinsurer"/></td>
+			</tr>
+			<tr>
+				<td>Total Amount</td>
+				<td><input type="number" id="updated_totalamount" name="totalamount" onchange="updateamount()" onfocus="removeErrormsg()" /><p class="errormsg" id="msgupdatetotalamt"/></td>
+			</tr>
+			<tr>
+				<td>Paid Amount</td>
+				<td><input type="number" id="updated_paidamount" name="paidamount" onchange="updateamount()" onfocus="removeErrormsg()" /><p class="errormsg" id="msgupdatepaidamt"/></td>
+			</tr>
+
+			<tr>
+				<td>Due Amount</td>
+				<td><input type="number" id="updated_dueamount" name="dueamount" onblur="updatepaymentstatus()" onfocus="removeErrormsg()" /><p class="errormsg" id="msgupdatedueamt"/></td>
+			</tr>
+			<tr>
+				<td>Payment Mode</td>
+				<td><input type="text" id="updated_paymentmode" name="paymentmode" onfocus="removeErrormsg()" /><p class="errormsg" id="msgupdatepaymtmode"/></td>
+			</tr>
+			<tr>
+				<td>Commission</td>
+				<td><input type="number" id="updated_commission" name="commission" onfocus="removeErrormsg()" /><p class="errormsg" id="msgupdatecomm"/></td>
+			</tr>
+			<tr>
+				<td>Rebate</td>
+				<td><input type="number" id="updated_rebate" name="rebate" onfocus="removeErrormsg()" /><p class="errormsg" id="msgupdaterebate"/></td>
+			</tr>
+			<tr>
+				<td>Payment Status</td>
+				<td>
+						<select id="updated_payment_status">
+							<option>Complete</option>
+							<option>Due</option>
+						</select>
+				</td>
+			</tr>
+			
+			<tr>
+				<td>Policy Copy</td>
+				<td><input type="file" id="file" name="file" /></td>
+			</tr>
+		</table>
+				<input type="submit" class="updatesubmit" value="Submit" id="updatetransactionSubmit"/>
+				<input type="button" class="updateclose" value="Close" onclick="closeForm()" />
+	</form>
+	</div>
+	<script type="text/javascript">
+	
+	 $("form").submit(function(evt){	 
+	      evt.preventDefault();
+	      var formData = new FormData($(this)[0]);
+	      console.log(formData)
+	      callupdateTransaction(formData)
+	      //prepareRequestBody(formData);
+	 });
+	 
+	 function removeErrormsg(){
+			$("p").text("");
+		}
+	
+		function prepareRequestBody(formData,transactionid) {
+			var updated_paidamount = $("#updated_paidamount").val();
+			var update_commission=$("#updated_commission").val();
+			var updated_dueamount = $("#updated_dueamount").val();
+			var updated_insurercompany=$("#updated_insurer_company").val();
+			var updated_paymentdate=$("#updated_paymentdate").val();
+			var updated_paymentmode = $("#updated_paymentmode").val();
+			var updated_policyno = $("#updated_policyno").val();
+			var updated_rebate = $("#updated_rebate").val();
+			var updated_totalamount = $("#updated_totalamount").val();
+			if(updated_paidamount == ""){
+				$("#msgupdatepaidamt").text("*This value is required");
+			}
+			else if(update_commission == ""){
+				$("#msgupdatecomm").text("*This value is required");
+			}
+			else if(updated_dueamount == ""){
+				$("#msgupdatedueamt").text("*This value is required");
+			}
+			else if(updated_insurercompany == ""){
+				$("#msginsurer").text("*This value is required");
+			}
+			else if(updated_paymentdate == ""){
+				$("#msgupdatepaymentdate").text("*This value is required");
+			}
+			else if(updated_paymentmode == ""){
+				$("#msgupdatepaymtmode").text("*This value is required");
+			}
+			else if(updated_policyno == ""){
+				$("#msgupdatepolicyno").text("*This value is required");
+			}
+			else if(updated_rebate == ""){
+				$("#msgupdaterebate").text("*This value is required");
+			}
+			else if(updated_totalamount == ""){
+				$("#msgupdatetotalamt").text("*This value is required");
+			}
+			else{
+			var data = {};
+			console.log("Transaction Id is :***")
+			console.log(transactionid)
+			data.amountpaid = $("#updated_paidamount").val();
+			data.commission = $("#updated_commission").val();
+			data.dueamount = $("#updated_dueamount").val();
+			data.insurer_company = $("#updated_insurer_company").val();
+			data.paymentDate = $("#updated_paymentdate")
+					.val();
+			data.payment_status = $("#updated_payment_status").val();
+			//data.paymentid = $("#updatedquotedescription").val();
+			data.paymentmode = $("#updated_paymentmode").val();
+			data.policyno = $("#updated_policyno").val();
+			data.rebate = $("#updated_rebate").val();
+			data.totalamount = $("#updated_totalamount").val();
+			var endpoint = endpoints.updatePayment;
+			endpoint = endpoint.replace('id', transactionid);
+			apiPutCall(endpoint, data, formData,transactionid)
+		}
+		}	
+		function apiDeleteCall(paymentid) {
+			var endpoint=endpoints.deletePayment;
+			endpoint=endpoint.replace("id",paymentid);
+			console.log("Values in api call Body..." + body)
+			console.log("Values in api call Endpoint..." + endpoint)
+			console.log("Inside api call.....")
+			console.log("End point is: " + endpoint)
+			console.log("Body is: " + body)
+			var bearerToken=getCookie();
+			console.log("Bearer token:"+bearerToken)
+			$.ajax({
+				method : 'DELETE',
+				contentType : 'application/json',
+				beforeSend: function(xhr) {
+	                   xhr.setRequestHeader("Authorization", bearerToken);
+	                },
+				url : endpoint,
+				success : function(data) {
+					success2(data);
+
+				},
+				error : function(error) {
+					alert("Failed to delete the payment details")
+				}
+			});
+			return false;
+		}
+		function success2(data) {
+			console.log("Successfully done...")
+			console.log(data);
+			alert("Successfully deleted the payment details")
+			whatever();
+		}
+		
+		function downloadRecord(downloadid){
+			var endpoint=endpoints.downloadRecord;
+			endpoint = endpoint.replace("id", downloadid);
+			console.log("End point: " + endpoint)
+			var bearerToken=getCookie();
+			console.log("Bearer token:"+bearerToken)
+			$.ajax({
+				method : 'GET',
+				url : endpoint,
+				beforeSend: function(xhr) {
+	                   xhr.setRequestHeader("Authorization", bearerToken);
+	                },
+				xhrFields:{
+					responseType: 'blob'
+				},
+				success : function(data) {
+					 var a = document.createElement('a');
+			            var url = window.URL.createObjectURL(data);
+			            a.href = url;
+			            a.download = 'fileCopy';
+			            document.body.append(a);
+			            a.click();
+			            a.remove();
+			            window.URL.revokeObjectURL(url);
+			            alert("Successfully downloaded the file")
+				},
+				error : function(error) {
+					alert("Failed to download the file");
+				}
+			});
+			return false;
+		}
+	function success4(data) {
+		console.log("Successfully done...")
+		console.log(data);
+		alert("Successfully downloaded the file")
+	}
+		
+		function apiPutCall(endpoint, body, formData,transactionid) {
+			console.log("Values in api call Body..." + body)
+			console.log("Values in api call Endpoint..." + endpoint)
+			console.log("End point is: " + endpoint)
+			console.log("Body is: " + body)
+			var bearerToken=getCookie();
+			console.log("Bearer token:"+bearerToken)
+			$.ajax({
+				method : 'PUT',
+				contentType : 'application/json',
+				beforeSend: function(xhr) {
+	                   xhr.setRequestHeader("Authorization", bearerToken);
+	                },
+				url : endpoint,
+				data : JSON.stringify(body),
+				success : function(data) {
+					success(data, formData,transactionid);
+
+				},
+				error : function(error) {
+					alert("Failed to update the transaction details")
+				}
+			});
+			return false;
+		}
+		function success(data, formData, transactionid) {
+			console.log("Successfully done...")
+			console.log(data);
+			var updatepaymentcopy=$("#file").val();
+			console.log("GNR..:"+updatepaymentcopy)
+			if(updatepaymentcopy==""){
+				closeForm();
+				alert("Successfully updated the transaction details with no changes in the file copy")
+				whatever();
+			}
+			else{
+				fileUploadCall(formData,transactionid);
+			}
+		}
+		
+		function fileUploadCall(formData,paymentid){
+			var endpoint=endpoints.uploadFile;
+			endpoint=endpoint.replace("id",paymentid);
+			console.log("File upload end point..."+endpoint)
+			var bearerToken=getCookie();
+			console.log("Bearer token:"+bearerToken)
+			  $.ajax({
+			       url: endpoint,
+			       type: 'POST',
+			       data: formData,
+			       beforeSend: function(xhr) {
+	                   xhr.setRequestHeader("Authorization", bearerToken);
+	                },
+			       async: false,
+			       cache: false,
+			       contentType: false,
+			       processData: false,
+			       success: function (response) {
+			    	   closeForm();
+			    	   alert("Payment details are updated succesfully")
+			    	   whatever();
+			       }
+			   });
+		}
+
+		function whatever() {
+            console.log("Inside function...")
+            var vehiclenumber = $('#vehiclenumber').val();
+            console.log("Vehicle number: " + vehiclenumber)
+            endpoint = endpoints.getPayment;
+            console.log("End point is: " + endpoint)
+            body = ""
+            endpoint = endpoint.replace("id", vehiclenumber);
+            console.log("Updated Endpoint is: " + endpoint);
+            apiQuoteCall(endpoint, body);
+}
+
+	$("#updatetransaction").click(whatever)
+
+		function apiQuoteCall(endpoint, body) {
+			console.log("End point: " + endpoint)
+			console.log("Inside api call.....")
+			console.log("End point is: " + endpoint)
+			console.log("Body is: " + body)
+			var bearerToken=getCookie();
+			console.log("Bearer token:"+bearerToken)
+			$.ajax({
+				method : 'GET',
+				beforeSend: function(xhr) {
+	                   xhr.setRequestHeader("Authorization", bearerToken);
+	                },
+				url : endpoint,
+				success : function(data) {
+					success1(data);
+				},
+				error : function(error) {
+					alert(error);
+				}
+			});
+			return false;
+		}
+	function success1(data) {
+		console.log("Successfully done...")
+		console.log(data);
+		if(data.length == 0){
+			console.log("There is no response....")
+			$("#showData").text("No Records Found")
+		}
+		else{
+			parseData(data);
+		}
+		
+		//CreateTableFromJSON(data);
+	}
+		function parseData(data) {
+			const c = [];
+			for (var i = 0; i < data.length; i++) {
+				const b = {};
+				for ( var j in data[i]) {
+					if (typeof (data[i][j]) !== 'object') {
+						b[j] = data[i][j];
+					}
+				}
+				if (Object.keys(b).length) {
+					c.push(b);
+				}
+			}
+			console.log(c);
+			CreateTableFromJSON(c,"transactionid");
+		}
+	</script>
+
+	 <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+		integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+		crossorigin="anonymous"></script>
+	 <script type="text/javascript">
+		$(document).ready(function() {
+			$("#header").load("header.html",function(){
+				var token=getCookie();
+				if(token =="" || token == null){
+					window.location.href = endpoints.loginHTML;	
+				}
+				else{
+				console.log("Logged in user, so loading the page:"+token)
+				}
+			});
+			$("#footer").load("footer.html");
+		});
+		</script>
+</body>
+</html>

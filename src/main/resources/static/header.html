@@ -1,0 +1,115 @@
+<html>
+<link rel="stylesheet" type="text/css" href="/insta/styles/global.css" />
+<link rel="stylesheet" type="text/css" href="/insta/styles/header.css" />
+<script src="/insta/assets/pages/scripts/main.js"></script>
+<script src="/insta/assets/pages/scripts/global.js"></script>
+<div class="siteTitle" id="siteTitle"
+	style="width: 100%; height: 50px; background-color: #404040;">
+	<a id="homehtml"
+		style="position: fixed; font-size: 40px; margin: auto; color: #FFFFFF; font-family: Arial, Helvetica, sans-serif; text-decoration: none; left: 0;">SabkaInsurance</a>
+</div>
+<body>
+	<div class="topnav" id="myTopnav">
+		<script type="text/javascript">
+$("#customernewhtml").attr("href",endpoints.newCustomerHTML);
+$("#customerupdatehtml").attr("href",endpoints.updateCustomerHTML);
+$("#paymntnewreferer").attr("href",endpoints.refererPaymentHTML);
+$("#paymentudpatereferer").attr("href",endpoints.updaterefererPaymentHTML);
+$("#quotenewhtml").attr("href",endpoints.newQuoteHTML);
+$("#quoteupdatehtml").attr("href",endpoints.updateQuoteHTML);
+$("#vehiclenewhtml").attr("href",endpoints.newVehicleHTML);
+$("#vehicleupdatehtml").attr("href",endpoints.updateVehicleHTML);
+$("#paymentnewhtml").attr("href",endpoints.newPaymentHTML);
+$("#paymentupdatehtml").attr("href",endpoints.updatePayentHTML);
+$("#allcustomerhtml").attr("href",endpoints.allcustomersHTML);
+$("#allquoteshtml").attr("href",endpoints.allquotesHTML);
+$("#allvehicleshtml").attr("href",endpoints.allvehiclesHTML);
+$("#duepaymenthtml").attr("href",endpoints.duepaymentsHTML);
+$("#policydownloadhtml").attr("href",endpoints.policydownloadHTML);
+$("#referrerpaymenthtml").attr("href",endpoints.referrerPaymentReportHTML);
+$("#uploadcommissionhtml").attr("href",endpoints.uploadCommissonHTML);
+$("#homehtml").attr("href",endpoints.homeHTML);
+</script>
+		<div class="dropdown">
+			<button class="dropbtn">
+				Customer <i class="fa fa-caret-down"></i>
+			</button>
+			<div class="dropdown-content">
+				<a id="customernewhtml">New Customer</a> <a id="customerupdatehtml">Update
+					Customer</a>
+			</div>
+		</div>
+		<div class="dropdown">
+			<button class="dropbtn">
+				Vehicle <i class="fa fa-caret-down"></i>
+			</button>
+			<div class="dropdown-content">
+				<a id="vehiclenewhtml">New Vehicle</a> <a id="vehicleupdatehtml">Update
+					Vehicle</a>
+			</div>
+		</div>
+		<div class="dropdown">
+			<button class="dropbtn">
+				Quote <i class="fa fa-caret-down"></i>
+			</button>
+			<div class="dropdown-content">
+				<a id="quotenewhtml">New Quote</a> <a id="quoteupdatehtml">Update
+					Quote</a>
+			</div>
+		</div>
+		<div class="dropdown">
+			<button class="dropbtn">
+				Transaction <i class="fa fa-caret-down"></i>
+			</button>
+			<div class="dropdown-content">
+				<a id="paymentnewhtml">New Transaction</a> <a id="paymentupdatehtml">Update
+					Transaction</a><a id="uploadcommissionhtml">Upload Commission</a>
+			</div>
+		</div>
+		<div class="dropdown">
+			<button class="dropbtn">
+				Referrer Payment <i class="fa fa-caret-down"></i>
+			</button>
+			<div class="dropdown-content">
+				<a id="paymntnewreferer">New Referrer Payment</a> <a id="paymentudpatereferer">Update
+					Referrer Payment</a>
+			</div>
+		</div>
+		<div class="dropdown">
+			<button class="dropbtn">
+				Reports <i class="fa fa-caret-down"></i>
+			</button>
+			<div class="dropdown-content">
+				<a id="allcustomerhtml">Customers</a> <a id="allvehicleshtml">Vehicles</a>
+				<a id="allquoteshtml">Quotes</a> <a id="duepaymenthtml">Payments</a> <a id="referrerpaymenthtml">Referrer Payments</a>	
+			</div>
+		</div>
+		<div class="dropdown">
+			<button class="dropbtn">
+				Download <i class="fa fa-caret-down"></i>
+			</button>
+			<div class="dropdown-content">
+				<a id="policydownloadhtml">Download Receipt</a>
+			</div>
+		</div>
+		<a href="#Customer" class="active" onclick="logout()"
+			style="float: right">Logout</a> <a href="javascript:void(0);"
+			class="icon" onclick="myFunction()">&#9776;</a>
+	</div>
+	<script type="text/javascript">
+/* Toggle between adding and removing the "responsive" class to topnav when the user clicks on the icon */
+function myFunction() {
+  var x = document.getElementById("myTopnav");
+  if (x.className === "topnav") {
+    x.className += " responsive";
+  } else {
+    x.className = "topnav";
+  }
+}
+function logout(){
+	document.cookie = "bearerToken= ; expires = Thu, 01 Jan 1970 00:00:00 GMT"
+	window.location.href = endpoints.loginHTML;
+}
+</script>
+</body>
+</html>
