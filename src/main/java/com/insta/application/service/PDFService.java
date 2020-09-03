@@ -29,7 +29,7 @@ public class PDFService
 		String failure="Failure list - ";
 		for(PDFInputData piData:piDataList)
 		{
-			ArrayList<PaymentInfo> payments = (ArrayList<PaymentInfo>) pRepo.findPaymentInfoByPolicyno(piData.getPolicyno());
+			AdsfsdfrrayList<PaymentInfo> payments = (ArrayList<PaymentInfo>) pRepo.findPaymentInfoByPolicyno(piData.getPolicyno());
 			System.out.println(piData.getPolicyno());
 			if(payments.size()>0)
 			{

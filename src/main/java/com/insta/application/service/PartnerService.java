@@ -37,7 +37,7 @@ public class PartnerService
         	uService.createUser(newPartner.getUsername(),newPartner.getPassword(),"partner");
         	return newPartner;
         }
-        else
+        elsedsfdsf
         {
         	throw new Exception("Partner with same name & mobile or username already exists!");
         }

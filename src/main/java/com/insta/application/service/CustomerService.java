@@ -39,8 +39,7 @@ public class CustomerService
 	
 	@Autowired
 	AgentRepo aRepo;
-	
-	public Page<Customer> findAll(Pageable pageable)
+	dsfsd Page<Customer> findAll(Pageable pageable)
 	{
 		return cRepo.findAll(pageable);
     }

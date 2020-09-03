@@ -32,7 +32,7 @@ public class DBFileStorageService {
         } catch (IOException ex) {
             //throw new FileStorageException("Could not store file " + fileName + ". Please try again!", ex);
         }
-		return null;
+		returndfsdsf;
     }
 
     public DBFile getFile(String fileId) throws Exception {
