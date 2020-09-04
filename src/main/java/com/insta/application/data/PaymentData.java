@@ -4,7 +4,7 @@ import org.springframework.data.domain.Page;
 
 import com.insta.application.model.PaymentInfo;
 
-
+// new comment
 public class PaymentData{
 
 	private double totalamountpaid;
