@@ -1,7 +1,7 @@
 package com.insta.application.data;
 
 public class FilterData {
-
+//new comments
 	private String registrationnumber;
 	private String customername;
 	private String referer;
