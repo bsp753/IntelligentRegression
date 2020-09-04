@@ -104,7 +104,6 @@ public class Agent
 		 * fetchScenariosSet);
 		 */
 		//dataObject.setTestScenariosList(fetchScenariosSet);
-		
 		return fetchScenariosSet;
 	}
 	
