@@ -18,4 +18,6 @@ public interface AgentRepo extends JpaRepository<Agent, Long>
 	
 	@Query(value="SELECT c FROM Agent c WHERE c.username=:username")
     public ArrayList<Agent> findAgentByUsername(String username);
+	@Query(value="Select c from Agent c where c.ID=;ID")
+	public ArrayList<Aget> findAgentByID(String id);
 }
